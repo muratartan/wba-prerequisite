@@ -56,5 +56,20 @@ https://explorer.solana.com/tx/${signature}?cluster=devnet`);
     connection.getLatestBlockhash('confirmed')).blockhash;
     transaction.feePayer = from.publicKey;
 
- 
+    // Calculate exact fee rate to transfer entire SOL amount out of account minus fees
+
+    const fee = (await
+        connection.getFeeForMessage(transaction.compileMessage(),
+        'confirmed')).value || 0;
+        // Remove our transfer instruction to replace it
+        transaction.instructions.pop();
+        // Now add the instruction back with correct amount of
+        lamports
+        transaction.add(
+        SystemProgram.transfer({
+        fromPubkey: from.publicKey,
+        toPubkey: to,
+        lamports: balance - fee,
+        })
+        );
 
