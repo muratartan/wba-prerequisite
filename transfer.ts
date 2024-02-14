@@ -39,3 +39,22 @@ https://explorer.solana.com/tx/${signature}?cluster=devnet`);
     console.error(`Oops, something went wrong: ${e}`);
   }
 })();
+
+(async () => {
+    try {
+    // Get balance of dev wallet
+    const balance = await connection.getBalance(from.publicKey)
+    // Create a test transaction to calculate fees
+    const transaction = new Transaction().add(
+    SystemProgram.transfer({
+    fromPubkey: from.publicKey,
+    toPubkey: to,
+    lamports: balance,
+    })
+    );
+    transaction.recentBlockhash = (await
+    connection.getLatestBlockhash('confirmed')).blockhash;
+    transaction.feePayer = from.publicKey;
+
+ 
+
